@@ -5,7 +5,7 @@ from pyecharts.charts import Pie, Bar, Page, Line
 from pyecharts.commons.utils import JsCode
 from pyecharts.globals import ThemeType
 
-connect = pymysql.connect(
+connect = pymysql.connect(  #连接数据库
     host=str(input('数据库host：')),
     user=str(input('数据库user：')),
     password=str(input('数据库password：')),
@@ -15,7 +15,7 @@ connect = pymysql.connect(
 cursor = connect.cursor()
 
 
-def level_distr():
+def level_distr():  # 等级分布
     sql = """SELECT level FROM info """
     cursor.execute(sql)
     level_list = []
@@ -63,7 +63,7 @@ def level_distr():
     return c
 
 
-def sex_distr():
+def sex_distr():    # 性别分布
     sql = """SELECT sex FROM info """
     cursor.execute(sql)
     sex_list = []
@@ -107,7 +107,7 @@ def sex_distr():
     return c
 
 
-def follow_distr():
+def follow_distr(): # 关注权重
     l1 = l2 = l3 = l4 = l5 = 0
     sql = """SELECT following FROM info """
     cursor.execute(sql)
@@ -174,7 +174,7 @@ def follow_distr():
     return c
 
 
-def fans_distr():
+def fans_distr():   # 粉丝分布
     l1 = l2 = l3 = 0
     sql = """SELECT follower FROM info """
     cursor.execute(sql)
@@ -264,7 +264,7 @@ def vip_distr():
     return c
 
 
-def TimeLine():
+def TimeLine(): # 生成一周日期
     today = time.strftime('%Y-%m-%d', time.localtime(time.time()))
     str = today.replace("-", "")
     str2date = datetime.datetime.strptime(str, "%Y%m%d")
@@ -282,7 +282,7 @@ def TimeLine():
             return timeline
 
 
-def num_increase():
+def num_increase(): # 粉丝增长
     sql_month = """SELECT time_follow FROM info """
     cursor.execute(sql_month)
     times = cursor.fetchall()
@@ -340,7 +340,7 @@ def num_increase():
     return c
 
 # layout=Page.DraggablePageLayout
-page = Page()
+page = Page()   # 生成组合图表
 page.add(level_distr(), sex_distr(), follow_distr(), vip_distr(), num_increase(), fans_distr())
 page.render()
 
