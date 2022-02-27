@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 
-def CreateDb(host, user, password):
+def CreateDb(host, user, password): #数据库创建
     try:
         connect = pymysql.connect(
             host=str(host),
@@ -15,8 +15,8 @@ def CreateDb(host, user, password):
             password=str(password),
             charset='utf8',
         )
-        cursor = connect.cursor()  # 创建游标
-        cursor.execute("create database fans_db character set utf8;")  # 执行sql语句，创建一个数据库
+        cursor = connect.cursor()
+        cursor.execute("create database fans_db character set utf8;")
 
         connect.commit()
         connect.close()
@@ -25,7 +25,7 @@ def CreateDb(host, user, password):
         print('database fans_db has exists.')
 
 
-def Insert(host, user, password, fans_uid, name, sex, level, vip_status, follower, following, TimeArray):
+def Insert(host, user, password, fans_uid, name, sex, level, vip_status, follower, following, TimeArray):   #数据导入
     connect = pymysql.connect(
         host=str(host),
         user=str(user),
@@ -40,25 +40,23 @@ def Insert(host, user, password, fans_uid, name, sex, level, vip_status, followe
           'vip_status VARCHAR(255) NOT NULL , follower VARCHAR(255) NOT NULL, ' \
           'following VARCHAR(255) NOT NULL , time_follow VARCHAR(255) NOT NULL) '
 
-    # 注意需要主键（此处为id）
-    # 字段名 字段类型
     cursor.execute(sql)
     sql2 = 'insert into info(fans_uid, name, sex, level, vip_status, follower, following, ' \
            'time_follow)' \
            'values(%s, %s, %s, %s, %s, %s, %s, %s);'
     data = (fans_uid, name, sex, level, vip_status, follower, following, TimeArray)
 
-    cursor.execute(sql2, data)  # 使用游标执行sql
+    cursor.execute(sql2, data)
     connect.commit()
-    connect.close()  # 关闭游标和数据库的连接
+    connect.close()
 
 
-def GetPage(mid, n, sessdata):  # uid,页数|获得uid后发送粉丝列表请求
+def GetPage(mid, n, sessdata):  # 发送主页面请求
     cookies = {
-        'SESSDATA': sessdata,
+        'SESSDATA': sessdata,   # SESSDATA
     }
 
-    headers = {  # 待获取项？
+    headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0',
         'Accept': '*/*',
         'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
@@ -68,8 +66,8 @@ def GetPage(mid, n, sessdata):  # uid,页数|获得uid后发送粉丝列表请�
 
     params = (
         ('vmid', str(mid)),  # up主uid
-        ('pn', str(n)),
-        ('ps', '50'),
+        ('pn', str(n)), # 页数
+        ('ps', '50'),   # 每页数据条数（最大为50）
         ('order', 'desc'),
     )
 
@@ -78,7 +76,7 @@ def GetPage(mid, n, sessdata):  # uid,页数|获得uid后发送粉丝列表请�
     return res_up
 
 
-def GetFans_1(mid):
+def GetFans_1(mid): # 粉丝页面1
     headers1 = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
         'Accept': 'application/json, text/plain, */*',
@@ -97,9 +95,9 @@ def GetFans_1(mid):
     return res_fans1
 
 
-def GetFans_2(mid):
-    option = webdriver.FirefoxOptions()
-    option.add_argument('--headless')
+def GetFans_2(mid): # 粉丝页面2（需要selenium部分）
+    option = webdriver.FirefoxOptions() # 浏览器设置为firefox
+    option.add_argument('--headless')   # 设置为后台运行
     driver = webdriver.Firefox(options=option)
     driver.get('https://space.bilibili.com/' + str(mid))
     driver.execute_script("return document.documentElement.outerHTML")
@@ -108,7 +106,7 @@ def GetFans_2(mid):
     return driver
 
 
-def vipJudge(vip_type):
+def vipJudge(vip_type): # 会员判断
     if vip_type == 0:
         vip_status = '非大会员'
     else:
@@ -116,7 +114,7 @@ def vipJudge(vip_type):
     return vip_status
 
 
-def timeFormat(timeStamp):
+def timeFormat(timeStamp):  # 时间戳转换
     if timeStamp == 'NULL':
         return ' '
     else:
@@ -125,7 +123,7 @@ def timeFormat(timeStamp):
         return TimeArray
 
 
-def thread():
+def thread():   # 多线程
     for entry in json_obj['data']['list']:
         t = threading.Thread(target=FansData, args=(entry,))
         threads.append(t)
@@ -140,7 +138,7 @@ def thread():
     time.sleep(10)
 
 
-def FansData(entry):
+def FansData(entry):    # 数据提取处理
     times = 0
     times = times + 1
     fans_uid = entry['mid']
@@ -191,7 +189,7 @@ print('开始获取')
 threads = []
 t_list = []
 
-for i in range(1, 6):
+for i in range(1, 6):   # 粉丝列表页数 他人账号最多提取1至5页。自己账号最大可修改为1, 21
     res = GetPage(mid_input, i, SESSDATA)
     json_obj = json.loads(res.text)
     for Entry in json_obj['data']['list']:
