@@ -123,30 +123,7 @@ def timeFormat(timeStamp):
         timeArray = time.localtime(timeStamp)
         TimeArray = time.strftime("%Y-%m-%d", timeArray)
         return TimeArray
-
-
-def Charts(host, user, password):
-    connect = pymysql.connect(
-        host=str(host),
-        user=str(user),
-        password=str(password),
-        database='fans_db',
-        charset='utf8',
-    )
-    cursor = connect.cursor()
-    try:
-        sql = """"SELECT level FROM info """
-        cursor.execute(sql)
-
-        levels = cursor.fetchall()
-        for level in levels:
-            level_list.append(level[0])
-        print(level_list)
-    except:
-        print('查询失败')
-    finally:
-        connect.close()
-
+   
 
 global host_input
 mid_input = input('输入up主uid：')
