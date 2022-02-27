@@ -6,9 +6,9 @@ from pyecharts.commons.utils import JsCode
 from pyecharts.globals import ThemeType
 
 connect = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='0089ghj0087',
+    host=str(input('数据库host：')),
+    user=str(input('数据库user：')),
+    password=str(input('数据库password：')),
     database='fans_db',
     charset='utf8',
 )
