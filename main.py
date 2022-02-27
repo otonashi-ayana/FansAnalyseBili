@@ -123,9 +123,55 @@ def timeFormat(timeStamp):
         timeArray = time.localtime(timeStamp)
         TimeArray = time.strftime("%Y-%m-%d", timeArray)
         return TimeArray
-   
 
-global host_input
+
+def thread():
+    for entry in json_obj['data']['list']:
+        t = threading.Thread(target=FansData, args=(entry,))
+        threads.append(t)
+    for t in range(1, 11):
+        threads[t].start()
+    time.sleep(10)
+    for t in range(11, 21):
+        threads[t].start()
+    time.sleep(10)
+    for t in range(21, 31):
+        threads[t].start()
+    time.sleep(10)
+
+
+def FansData(entry):
+    times = 0
+    times = times + 1
+    fans_uid = entry['mid']
+    name = entry['uname']
+    try:
+        mtime = entry['mtime']
+    except:
+        mtime = 'NULL'
+
+    Res = GetFans_1(fans_uid)
+
+    json_obj1 = json.loads(Res.text)
+    sex = json_obj1['data']['sex']
+    level = json_obj1['data']['level']
+    vip = json_obj1['data']['vip']['type']
+
+    start = time.perf_counter()
+    driver = GetFans_2(fans_uid)
+    end = time.perf_counter()
+    print(times, end - start)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    following = soup.select('#n-gz')[0].text.replace(' ', '').replace('\n', '').replace('\r', '')
+    follower = soup.select('#n-fs')[0].text.replace(' ', '').replace('\n', '').replace('\r', '')
+
+    driver.close()
+
+    Insert(host_input, user_input, passw_input, fans_uid, name, sex, level, vipJudge(vip),
+           follower, following, timeFormat(mtime))
+    time.sleep(0.5)
+
+
 mid_input = input('输入up主uid：')
 while True:
     host_input = input('数据库host：')
@@ -140,39 +186,39 @@ while True:
         break
 
 CreateDb(host_input, user_input, passw_input)
-times = 0
 print('开始获取')
+
+threads = []
+t_list = []
+
 for i in range(1, 6):
     res = GetPage(mid_input, i, SESSDATA)
     json_obj = json.loads(res.text)
-    for entry in json_obj['data']['list']:
-        times = times + 1
-        fans_uid = entry['mid']
-        name = entry['uname']
-        sign = entry['sign']
-        try:
-            mtime = entry['mtime']
-        except:
-            mtime = 'NULL'
+    for Entry in json_obj['data']['list']:
+        t = threading.Thread(target=FansData, args=(Entry,))
+        threads.append(t)
 
-        res = GetFans_1(fans_uid)
-
-        json_obj1 = json.loads(res.text)
-        sex = json_obj1['data']['sex']
-        level = json_obj1['data']['level']
-        vip = json_obj1['data']['vip']['type']
-
-        start = time.perf_counter()
-        driver = GetFans_2(fans_uid)
-        end = time.perf_counter()
-        print(times, end - start)
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        following = soup.select('#n-gz')[0].text.replace(' ', '').replace('\n', '').replace('\r', '')
-        follower = soup.select('#n-fs')[0].text.replace(' ', '').replace('\n', '').replace('\r', '')
-
-        driver.close()
-
-        Insert(host_input, user_input, passw_input, fans_uid, name, sex, level, vipJudge(vip),
-               follower, following, timeFormat(mtime))
+    for t in range(1, 11):
+        threads[t].start()
         time.sleep(0.5)
+    time.sleep(10)
+    for t in range(11, 21):
+        threads[t].start()
+        time.sleep(0.5)
+    time.sleep(10)
+    for t in range(21, 31):
+        threads[t].start()
+        time.sleep(0.5)
+    time.sleep(10)
+    for t in range(31, 41):
+        threads[t].start()
+        time.sleep(0.5)
+    time.sleep(10)
+    for t in range(41, 51):
+        threads[t].start()
+        time.sleep(0.5)
+    time.sleep(10)
+
+    for t in threads:
+        t.join()
 
