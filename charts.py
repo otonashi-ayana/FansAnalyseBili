@@ -347,10 +347,10 @@ page.render()
 Page.save_resize_html("render.html", cfg_dict=[
     {"cid": "level", "width": "430.666666px", "height": "467.666666px", "top": "28px", "left": "109px"},
     {"cid": "sex", "width": "445.666666px", "height": "467.666666px", "top": "29px", "left": "568px"},
-    {"cid": "follow", "width": "748.666666px", "height": "372.666666px", "top": "897px", "left": "37px"},
+    {"cid": "follow", "width": "748.666666px", "height": "372.666666px", "top": "1000px", "left": "37px"},
     {"cid": "vip", "width": "430.666666px", "height": "466.666666px", "top": "29px", "left": "1057px"},
     {"cid": "increase", "width": "1078.666666px", "height": "399.666666px", "top": "496px", "left": "246px"},
-    {"cid": "fans", "width": "862.666666px", "height": "372.666666px", "top": "897.3333129882812px", "left": "786px"}],
+    {"cid": "fans", "width": "862.666666px", "height": "372.666666px", "top": "1000px", "left": "786px"}],
                       dest="fans.html")
 try:
     os.remove("render.html")
